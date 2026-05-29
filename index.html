@@ -59,6 +59,21 @@ body{
     >
         🔄 Reset All
     </button>
+    <button
+  onclick="exportExcel()"
+  style="
+    background:#1976d2;
+    color:white;
+    border:none;
+    padding:12px 25px;
+    font-size:18px;
+    border-radius:8px;
+    cursor:pointer;
+    margin-right:10px;
+  "
+>
+  📥 Export XLSX
+</button>
 </div>
   <div id="stats" style="font-size:22px;margin:15px 0;">
     <div>تم التسليم: <span id="receivedCount">0</span></div>
@@ -90,6 +105,17 @@ const API_URL =
 
         document.getElementById("remainingCount").innerText =
             data.remaining;
+
+    });
+
+}
+  function exportExcel(){
+
+    fetch(API_URL + "?export=1")
+    .then(r => r.text())
+    .then(url => {
+
+        window.open(url, "_blank");
 
     });
 
