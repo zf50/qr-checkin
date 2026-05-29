@@ -89,6 +89,79 @@ function processCode(code){
 
         const result = document.getElementById("result");
 
+        // لو محتاج اسم
+        if(data.startsWith("NEED_NAME|")){
+
+            const id = data.split("|")[1];
+
+            result.className = "";
+
+            result.innerHTML = `
+                <div style="font-size:22px;margin-bottom:10px;">
+                    الرقم: ${id}
+                </div>
+
+                <input
+                    type="text"
+                    id="personName"
+                    placeholder="اكتب الاسم"
+                    style="font-size:22px;padding:10px;width:250px;"
+                >
+
+                <br><br>
+
+                <button
+                    id="saveBtn"
+                    style="font-size:22px;padding:10px 25px;"
+                >
+                    حفظ
+                </button>
+            `;
+
+            document.getElementById("personName").focus();
+
+            document.getElementById("saveBtn").onclick = function(){
+
+                const name =
+                    document.getElementById("personName").value.trim();
+
+                if(!name){
+                    alert("يجب إدخال الاسم");
+                    return;
+                }
+
+                fetch(
+                    API_URL +
+                    "?save=1&id=" +
+                    encodeURIComponent(id) +
+                    "&name=" +
+                    encodeURIComponent(name)
+                )
+                .then(r => r.text())
+                .then(msg => {
+
+                    result.innerHTML = msg;
+
+                    if(msg.includes("✅")){
+                        result.className = "success";
+                    }else{
+                        result.className = "error";
+                    }
+
+                    loadStats();
+
+                    setTimeout(() => {
+                        scanning = true;
+                        barcodeInput.focus();
+                    }, 2000);
+
+                });
+
+            };
+
+            return;
+        }
+
         result.innerHTML = data;
         loadStats();
 
@@ -102,7 +175,7 @@ function processCode(code){
 
         setTimeout(() => {
             scanning = true;
-            document.getElementById("barcodeInput").focus();
+            barcodeInput.focus();
         }, 2000);
 
     })
