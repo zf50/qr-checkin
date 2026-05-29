@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>QR Check-in</title>
+
+<script src="https://unpkg.com/html5-qrcode"></script>
+
+<style>
+body{
+  font-family:Arial,sans-serif;
+  text-align:center;
+  padding:20px;
+}
+#reader{
+  width:350px;
+  margin:auto;
+}
+#result{
+  margin-top:20px;
+  font-size:24px;
+  font-weight:bold;
+}
+</style>
+</head>
+
+<body>
+
+<h2>QR Check-in</h2>
+
+<div id="reader"></div>
+
+<div id="result"></div>
+
+<script>
+
+function onScanSuccess(decodedText){
+
+  document.getElementById("result").innerHTML =
+    "QR Read: " + decodedText;
+
+}
+
+new Html5Qrcode("reader").start(
+  { facingMode: "environment" },
+  {
+    fps: 10,
+    qrbox: 250
+  },
+  onScanSuccess
+);
+
+</script>
+
+</body>
+</html>
