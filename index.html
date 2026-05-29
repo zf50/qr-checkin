@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>QR Check-in</title>
+<title>QR & Barcode Check-in</title>
 
 <script src="https://unpkg.com/html5-qrcode"></script>
 
@@ -13,23 +13,41 @@ body{
   text-align:center;
   padding:20px;
 }
+
 #reader{
   width:350px;
   margin:auto;
 }
+
+#barcodeInput{
+  position:absolute;
+  left:-9999px;
+}
+
 #result{
   margin-top:20px;
   font-size:24px;
   font-weight:bold;
+  min-height:50px;
+}
+
+.success{
+  color:green;
+}
+
+.error{
+  color:red;
 }
 </style>
 </head>
 
 <body>
 
-<h2>QR Check-in</h2>
+<h2>QR & Barcode Check-in</h2>
 
 <div id="reader"></div>
+
+<input type="text" id="barcodeInput" autofocus>
 
 <div id="result"></div>
 
@@ -37,34 +55,81 @@ body{
 
 let scanning = true;
 
-function onScanSuccess(decodedText){
+const API_URL =
+"https://script.google.com/macros/s/AKfycbxqCZKevTDiFZ_luenu7Anfhr3Iwsv53PrK_y-FEHaaRCM5baERdp0UMJLQTbdzCCjZ/exec";
+
+function processCode(code){
 
     if(!scanning) return;
 
     scanning = false;
 
-    fetch("https://script.google.com/macros/s/AKfycbxqCZKevTDiFZ_luenu7Anfhr3Iwsv53PrK_y-FEHaaRCM5baERdp0UMJLQTbdzCCjZ/exec?id=" + decodedText)
+    fetch(API_URL + "?id=" + encodeURIComponent(code))
     .then(r => r.text())
     .then(data => {
 
-        document.getElementById("result").innerHTML = data;
+        const result = document.getElementById("result");
+
+        result.innerHTML = data;
+
+        if(data.includes("✅")){
+            result.className = "success";
+        }else{
+            result.className = "error";
+        }
+
+        document.getElementById("barcodeInput").value = "";
 
         setTimeout(() => {
             scanning = true;
-        }, 3000);
+            document.getElementById("barcodeInput").focus();
+        }, 2000);
 
+    })
+    .catch(err => {
+
+        document.getElementById("result").innerHTML =
+        "❌ Connection Error";
+
+        scanning = true;
     });
-
 }
 
-new Html5Qrcode("reader").start(
-  { facingMode: "environment" },
-  {
-    fps: 10,
-    qrbox: 250
-  },
-  onScanSuccess
+function onScanSuccess(decodedText){
+    processCode(decodedText);
+}
+
+const html5QrCode = new Html5Qrcode("reader");
+
+html5QrCode.start(
+    { facingMode: "environment" },
+    {
+        fps: 10,
+        qrbox: 250
+    },
+    onScanSuccess
 );
+
+const barcodeInput = document.getElementById("barcodeInput");
+
+barcodeInput.focus();
+
+barcodeInput.addEventListener("keydown", function(e){
+
+    if(e.key === "Enter"){
+
+        const code = barcodeInput.value.trim();
+
+        if(code){
+            processCode(code);
+        }
+    }
+
+});
+
+document.addEventListener("click", () => {
+    barcodeInput.focus();
+});
 
 </script>
 
