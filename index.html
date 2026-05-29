@@ -35,13 +35,25 @@ body{
 
 <script>
 
+let scanning = true;
+
 function onScanSuccess(decodedText){
 
-  fetch("https://script.google.com/macros/s/AKfycbxqCZKevTDiFZ_luenu7Anfhr3Iwsv53PrK_y-FEHaaRCM5baERdp0UMJLQTbdzCCjZ/exec?id=" + decodedText)
-.then(r => r.text())
-.then(data => {
-    document.getElementById("result").innerHTML = data;
-});
+    if(!scanning) return;
+
+    scanning = false;
+
+    fetch("https://script.google.com/macros/s/AKfycbxqCZKevTDiFZ_luenu7Anfhr3Iwsv53PrK_y-FEHaaRCM5baERdp0UMJLQTbdzCCjZ/exec?id=" + decodedText)
+    .then(r => r.text())
+    .then(data => {
+
+        document.getElementById("result").innerHTML = data;
+
+        setTimeout(() => {
+            scanning = true;
+        }, 3000);
+
+    });
 
 }
 
