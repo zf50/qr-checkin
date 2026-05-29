@@ -44,6 +44,22 @@ body{
 <body>
 
 <h2>QR & Barcode Check-in</h2>
+  <div style="margin:15px 0;">
+    <button
+        onclick="resetAll()"
+        style="
+            background:#d32f2f;
+            color:white;
+            border:none;
+            padding:12px 25px;
+            font-size:18px;
+            border-radius:8px;
+            cursor:pointer;
+        "
+    >
+        🔄 Reset All
+    </button>
+</div>
   <div id="stats" style="font-size:22px;margin:15px 0;">
     <div>تم التسليم: <span id="receivedCount">0</span></div>
     <div>المتبقي: <span id="remainingCount">0</span></div>
@@ -63,6 +79,7 @@ const API_URL =
 "https://script.google.com/macros/s/AKfycbxqCZKevTDiFZ_luenu7Anfhr3Iwsv53PrK_y-FEHaaRCM5baERdp0UMJLQTbdzCCjZ/exec";
 
   function loadStats(){
+    
 
     fetch(API_URL + "?stats=1")
     .then(r => r.json())
@@ -73,6 +90,25 @@ const API_URL =
 
         document.getElementById("remainingCount").innerText =
             data.remaining;
+
+    });
+
+}
+  function resetAll(){
+
+    if(!confirm("هل تريد مسح جميع بيانات الحضور؟")){
+        return;
+    }
+
+    fetch(API_URL + "?reset=1")
+    .then(r => r.text())
+    .then(msg => {
+
+        alert(msg);
+
+        loadStats();
+
+        document.getElementById("result").innerHTML = "";
 
     });
 
