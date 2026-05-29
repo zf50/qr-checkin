@@ -37,8 +37,11 @@ body{
 
 function onScanSuccess(decodedText){
 
-  document.getElementById("result").innerHTML =
-    "QR Read: " + decodedText;
+  fetch("https://script.google.com/macros/s/AKfycbxqCZKevTDiFZ_luenu7Anfhr3Iwsv53PrK_y-FEHaaRCM5baERdp0UMJLQTbdzCCjZ/exec=" + decodedText)
+.then(r => r.text())
+.then(data => {
+    document.getElementById("result").innerHTML = data;
+});
 
 }
 
